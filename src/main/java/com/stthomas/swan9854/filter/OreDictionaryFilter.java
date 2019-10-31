@@ -13,9 +13,6 @@ public class OreDictionaryFilter extends ObjectFilter {
 	public boolean accept(ItemStack stack)
 	{
 		//TODO: implementation of text file that lists filters (editable)
-		return OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]).substring(0,5).equals("ingot") ||
-			   OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]).equals("dustRedstone") ||
-			   OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]).equals("gemDiamond") ||
-			   OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]).equals("forgeHammer");
+		return OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]).equals("forgeHammer");
 	}
 }
