@@ -101,16 +101,9 @@ public class EventHandlerItem {
 		{
 			//TODO: check if recipe is in infinite loop
 			//step one find recipe
-			IRecipe[] recipes = RecipeCache.instance().matchListRecipes();
-			 
-			for(IRecipe recipe: recipes)
+			IRecipe recipe = grabRecipe(itemStack);
+			if(itemStack != null & recipe != null)
 			{
-				if(index > 4)
-					break;
-				//if recipe is found
-				if(itemStack == null)
-					break;
-					
 				if(recipe.getRecipeOutput().getDisplayName().equals(itemStack.getDisplayName()))
 		    	{
 					ItemStack[] stacks = new ItemStack[9];
@@ -129,7 +122,8 @@ public class EventHandlerItem {
 							if(OreDictionary.getOreIDs(itemStack).length > 0 && new OreDictionaryFilter().accept(itemStack))
 								break;
 							
-						
+						    if(itemIsRecursive(itemStack))
+						    	break;
 						
 							recursiveRecipes(index+1, stacks[i]);
 						}
@@ -150,6 +144,50 @@ public class EventHandlerItem {
 				}
 			}
 			
+		}
+
+
+		private boolean itemIsRecursive(ItemStack itemStack) {
+			// TODO Auto-generated method stub
+			IRecipe recipe = grabRecipe(itemStack);
+			if(itemStack != null & recipe != null)
+			{
+				if(recipe.getIngredients().size() > 0)
+				{
+					for(ItemStack stack: recipe.getIngredients().get(0).getMatchingStacks())
+					{
+						IRecipe recipe2 = grabRecipe(stack);
+						if(recipe2 != null && recipe2.getIngredients().size() > 0)
+						{
+							for(ItemStack stack2: recipe2.getIngredients().get(0).getMatchingStacks())
+							{
+								if(itemStack.getDisplayName().equals(stack2.getDisplayName()))
+								{
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}	
+			return false;
+		}
+
+
+		private IRecipe grabRecipe(ItemStack itemStack) {
+			// TODO Auto-generated method stub
+			IRecipe[] recipes = RecipeCache.instance().matchListRecipes();
+			if(itemStack != null)
+			{
+				for(IRecipe recipe: recipes)
+				{
+					if(ItemStack.areItemsEqualIgnoreDurability(recipe.getRecipeOutput(), itemStack))
+					{
+						return recipe;
+					}
+				}
+			}
+			return null;
 		}
 
 
@@ -179,3 +217,4 @@ public class EventHandlerItem {
 		}
 		
 }
+
