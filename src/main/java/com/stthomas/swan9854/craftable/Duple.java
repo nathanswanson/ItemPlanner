@@ -42,15 +42,16 @@ public class Duple {
 	@Override
 	public boolean equals(Object t)
 	{
+		//error
+		
 		Duple other = (Duple) t;
-		return this.getPhase() + this.getStack().hashCode() == 
-				other.getPhase() + this.getStack().hashCode();
+		return ItemStack.areItemStacksEqual(this.getStack(), other.getStack()) && other.getPhase() == this.getPhase();
 	}
 	
 	@Override
 	public int hashCode()
 	{
-		return this.getPhase() + this.getStack().hashCode();
+		return this.getPhase() + this.getStack().getItem().hashCode();
 	}
 	
 	
