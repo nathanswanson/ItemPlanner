@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.stthomas.swan9854.craftable.Duple;
+import com.stthomas.swan9854.gui.GuiInit;
 import com.stthomas.swan9854.gui.GuiLine;
 import com.stthomas.swan9854.gui.GuiPart;
 import com.stthomas.swan9854.gui.GuiPlanner;
@@ -18,6 +20,7 @@ import com.stthomas.swan9854.gui.IGuiPart;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -42,7 +45,19 @@ public class OverlayHandler extends Gui {
 		public void render(RenderGameOverlayEvent.Post e)
 		{
 	    	 
-	    	 
+	    	 if(GuiInit.isInitialzied() && false)
+	    	 {
+	    		 ScaledResolution scaled = new ScaledResolution(Minecraft.getMinecraft());
+
+	    	    int width = scaled.getScaledWidth();
+			    int height = scaled.getScaledHeight();
+				int mouseX = Mouse.getX();
+			    int mouseY = Mouse.getY();
+			  //  Mouse.setGrabbed(false);
+	    		GuiButton button = new GuiButton(259, width / 2, height /2, "test");
+	    		button.enabled = true;
+	    		button.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, 2);
+	    	 }
 	    	 if(GuiPlanner.isInitialized() && GuiPlanner.instance().getPart() != null)
 	    	 {
 	    		 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -86,3 +101,4 @@ public class OverlayHandler extends Gui {
 			}
 		}
 }
+
