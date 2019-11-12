@@ -13,6 +13,7 @@ import com.stthomas.swan9854.core.Keybinds;
 import com.stthomas.swan9854.core.RecipeCache;
 import com.stthomas.swan9854.craftable.Duple;
 import com.stthomas.swan9854.filter.OreDictionaryFilter;
+import com.stthomas.swan9854.gui.GuiInit;
 import com.stthomas.swan9854.gui.GuiPlanner;
 
 import net.minecraft.client.Minecraft;
@@ -38,18 +39,13 @@ import scala.collection.mutable.HashTable;
 
 public class EventHandlerItem {
 		private boolean pressed;
-		private HashMap<Item, Integer> stackOverload;
-		private static HashMap<Duple, Integer> h;
+		private int count;
 	    @SubscribeEvent
 	    public void onKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event)
-	    {
-	    	
+	    {	
 	        if (!pressed & Keybinds.useINV.getKeyCode() == Keyboard.getEventKey() & Minecraft.getMinecraft().currentScreen instanceof GuiContainer)
 	        {
 	        	//clears the guiBuffer after every 'keybind' press
-	        	GuiPlanner.initialize();
-	        	h = new HashMap<Duple, Integer>();
-	        	stackOverload = new HashMap<Item, Integer>();
 	        	//TODO: remove hardcoded implementations in this method
 	        	pressed = true;
 	            GuiScreen screen = Minecraft.getMinecraft().currentScreen;
@@ -71,150 +67,22 @@ public class EventHandlerItem {
 			    int mouseY = (height - Mouse.getY() * height / mc.displayHeight - 1) - guiTop;
 
     			
-    			
 	            for(int i = 0; slots.size() > i; i++)
 	            {
 	            	if(!slots.get(i).getStack().getDisplayName().equals("Air"))
 	            	{
 	            		Slot slot = slots.get(i);
             			if(mouseX > slot.xPos & mouseY > slot.yPos & mouseX < slot.xPos + 18 & mouseY < slot.yPos + 18)
-            			{
-            				
-            				
-                			recursiveRecipes(0, slot.getStack());
-                			if(h != null)
-                				GuiPlanner.instance().convertToGui(h);
+            			{      			
+                			GuiInit.initialize(slot.getStack(), 1);            			
             			}
-	            	}
-	            		
+	            	}	            		
 	            }
-	        }
-	        
+	        }	    
 	        //removed pressed restriction
 	        if(!Keyboard.getEventKeyState())
 	    		pressed = false;
-	        	//GuiPlanner.destroy();
-	    }
-
-		
-		private void recursiveRecipes(int index, ItemStack itemStack)
-		{
-			//TODO: check if recipe is in infinite loop
-			//step one find recipe
-			IRecipe recipe = grabRecipe(itemStack);
-			if(itemStack != null & recipe != null)
-			{
-				if(recipe.getRecipeOutput().getDisplayName().equals(itemStack.getDisplayName()))
-		    	{
-					ItemStack[] stacks = new ItemStack[9];
-		    		for(int l = 0; l < recipe.getIngredients().size(); l++)
-		    		{
-		    			if(recipe.getIngredients().get(l).getMatchingStacks().length > 0)
-		    				stacks[l] = recipe.getIngredients().get(l).getMatchingStacks()[0];
-		    		}
-					if(stackNeedsFill(recipe, itemStack))
-					{
-						for(int i = 0; i < 9;i++)
-						{
-							if(itemStack.getMaxItemUseDuration() != 0)
-								break;
-							
-							if(OreDictionary.getOreIDs(itemStack).length > 0 && new OreDictionaryFilter().accept(itemStack))
-								break;
-							
-						    if(itemIsRecursive(itemStack))
-						    	break;
-						
-							recursiveRecipes(index+1, stacks[i]);
-						}
-		    		}
-		    	}
-			}
-			
-			if(itemStack != null)
-			{
-				Duple input = new Duple(itemStack, index); 
-				if(itemStack != null && h.containsKey(new Duple(itemStack, index)))
-				{
-					h.put(input, h.get(input) + 1);
-				}
-				else if(itemStack != null)
-				{
-					h.put(input, 1);
-				}
-			}
-			
-		}
-
-
-		private boolean itemIsRecursive(ItemStack itemStack) {
-			// TODO Auto-generated method stub
-			IRecipe recipe = grabRecipe(itemStack);
-			if(itemStack != null & recipe != null)
-			{
-				if(recipe.getIngredients().size() > 0)
-				{
-					for(ItemStack stack: recipe.getIngredients().get(0).getMatchingStacks())
-					{
-						IRecipe recipe2 = grabRecipe(stack);
-						if(recipe2 != null && recipe2.getIngredients().size() > 0)
-						{
-							for(ItemStack stack2: recipe2.getIngredients().get(0).getMatchingStacks())
-							{
-								if(itemStack.getDisplayName().equals(stack2.getDisplayName()))
-								{
-									return true;
-								}
-							}
-						}
-					}
-				}
-			}	
-			return false;
-		}
-
-
-		private IRecipe grabRecipe(ItemStack itemStack) {
-			// TODO Auto-generated method stub
-			IRecipe[] recipes = RecipeCache.instance().matchListRecipes();
-			if(itemStack != null)
-			{
-				for(IRecipe recipe: recipes)
-				{
-					if(ItemStack.areItemsEqualIgnoreDurability(recipe.getRecipeOutput(), itemStack))
-					{
-						return recipe;
-					}
-				}
-			}
-			return null;
-		}
-
-
-		private boolean stackNeedsFill(IRecipe recipe, ItemStack itemStack) {
-			// if it does not exist yet it needs to be filled and created
-			
-			if(!stackOverload.containsKey(itemStack.getItem()))
-			{
-				stackOverload.put(itemStack.getItem(), recipe.getRecipeOutput().getCount());
-				return true;
-			}
-			else if(stackOverload.get(itemStack.getItem()) == 0)
-			{
-				stackOverload.put(itemStack.getItem(), recipe.getRecipeOutput().getCount());
-				return true;
-			}
-			else
-			{
-				stackOverload.put(itemStack.getItem(), stackOverload.get(itemStack.getItem()) - 1);
-				return false;
-			}
-		}
-		
-		public static HashMap<Duple, Integer> getStack()
-		{
-			return h;
-		}
-		
+	    }		
 }
+
 
