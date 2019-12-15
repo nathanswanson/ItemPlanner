@@ -13,7 +13,7 @@ import com.stthomas.swan9854.core.Keybinds;
 import com.stthomas.swan9854.core.RecipeCache;
 import com.stthomas.swan9854.craftable.Duple;
 import com.stthomas.swan9854.filter.OreDictionaryFilter;
-import com.stthomas.swan9854.gui.GuiInit;
+import com.stthomas.swan9854.gui.GuiItemPlanner;
 import com.stthomas.swan9854.gui.GuiPlanner;
 
 import net.minecraft.client.Minecraft;
@@ -74,7 +74,7 @@ public class EventHandlerItem {
 	            		Slot slot = slots.get(i);
             			if(mouseX > slot.xPos & mouseY > slot.yPos & mouseX < slot.xPos + 18 & mouseY < slot.yPos + 18)
             			{      			
-                			GuiInit.initialize(slot.getStack(), 1);            			
+                			Minecraft.getMinecraft().displayGuiScreen(new GuiItemPlanner(slot.getStack()));
             			}
 	            	}	            		
 	            }
@@ -84,5 +84,3 @@ public class EventHandlerItem {
 	    		pressed = false;
 	    }		
 }
-
-
