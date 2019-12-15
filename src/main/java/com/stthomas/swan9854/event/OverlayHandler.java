@@ -11,16 +11,17 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.stthomas.swan9854.craftable.Duple;
-import com.stthomas.swan9854.gui.GuiInit;
-import com.stthomas.swan9854.gui.GuiLine;
-import com.stthomas.swan9854.gui.GuiPart;
 import com.stthomas.swan9854.gui.GuiPlanner;
-import com.stthomas.swan9854.gui.GuiString;
-import com.stthomas.swan9854.gui.IGuiPart;
+import com.stthomas.swan9854.gui.part.GuiLine;
+import com.stthomas.swan9854.gui.part.GuiPart;
+import com.stthomas.swan9854.gui.part.GuiRect;
+import com.stthomas.swan9854.gui.part.GuiString;
+import com.stthomas.swan9854.gui.part.IGuiPart;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,6 +30,7 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelManager;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.Item;
@@ -39,26 +41,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class OverlayHandler extends Gui {
 	
-	    String text = "Hello world!";
 	 
 	    @SubscribeEvent
 		public void render(RenderGameOverlayEvent.Post e)
 		{
-	    	 
-	    	 if(GuiInit.isInitialzied() && false)
-	    	 {
-	    		 ScaledResolution scaled = new ScaledResolution(Minecraft.getMinecraft());
-
-	    	    int width = scaled.getScaledWidth();
-			    int height = scaled.getScaledHeight();
-				int mouseX = Mouse.getX();
-			    int mouseY = Mouse.getY();
-			  //  Mouse.setGrabbed(false);
-	    		GuiButton button = new GuiButton(259, width / 2, height /2, "test");
-	    		button.enabled = true;
-	    		button.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, 2);
-	    	 }
-	    	 if(GuiPlanner.isInitialized() && GuiPlanner.instance().getPart() != null)
+	    	 //This is ONLY used for showing the actual items on screen after it is planned
+	    	 if(GuiPlanner.instance().isReady())
 	    	 {
 	    		 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	    	     GlStateManager.disableDepth();
@@ -71,7 +59,7 @@ public class OverlayHandler extends Gui {
 	    		 {
 	    			 if(parts[i] instanceof GuiString)
 	    			 {
-	    				 drawString(Minecraft.getMinecraft().fontRenderer, ((GuiString)parts[i]).getPart().getString(), 5, 5 + (i * 10), Integer.parseInt("FFAA00", 16));
+	    				 drawString(Minecraft.getMinecraft().fontRenderer, ((GuiString)parts[i]).getPart().getString(), 5, 5 + (i * 10), Integer.parseInt(((GuiString) parts[i]).getColor() , 16));
 	    			 }
 	    			 else if(parts[i] instanceof GuiLine)
 	    			 {
@@ -81,13 +69,21 @@ public class OverlayHandler extends Gui {
 	    			 else if(parts[i] instanceof GuiPart)
 	    			 {
 	    				renderIcon((GuiPart)parts[i], i); 
-	    			 }		 
+	    			 }	
+	    			 else if(parts[i] instanceof GuiRect)
+	    			 {
+	    				 System.out.println("test");
+	    				 GuiRect rect = (GuiRect) parts[i];
+	    				 drawRect(width /2 -50, 50 ,width /2 + 50,  0, Integer.parseInt("ffAA00", 16));
+	    			 }
+	    			 
+	    			
 	    		  }
 	    	  }
 	    	 //generate GUI
 	    	 
 		}
-
+	    
 		public void renderIcon(GuiPart iGuiPart, int i)
 		{
 			RenderHelper.disableStandardItemLighting();
