@@ -19,7 +19,7 @@ public class RecipeCache {
 
 	private static RecipeCache instance;
 	private static Logger logger;
-	private static ArrayList<IRecipe> recipes;
+	private ArrayList<IRecipe> recipes;
 	
 	public static RecipeCache instance()
 	{
@@ -33,7 +33,8 @@ public class RecipeCache {
 
 	private void scan()
 		{
-			
+			recipes = new ArrayList<IRecipe>();
+
 			// RegistryNamespacecd does not have a size method so we must iterate till its finished with an index
 			for (IRecipe recipe : CraftingManager.REGISTRY)
 			{
@@ -48,7 +49,6 @@ public class RecipeCache {
 
 		if(instance == null)
 		{
-			recipes = new ArrayList<IRecipe>();
 			instance = new RecipeCache();
 			instance.scan();
 		}
@@ -56,12 +56,12 @@ public class RecipeCache {
 			logger.warn("WARNING: A method is trying to initialize RecipeCache but its already initialized");
 	}
 
-	private static ArrayList<IRecipe> getRecipes() {
+	private ArrayList<IRecipe> getRecipes() {
 		// TODO Auto-generated method stub
 		return recipes;
 	}
 	
-	public static IRecipe[] matchListRecipes()
+	public IRecipe[] matchListRecipes()
 	{
 		return getRecipes().toArray(new IRecipe[0]);
 	}
