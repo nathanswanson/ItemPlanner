@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import com.stthomas.swan9854.core.Keybinds;
 import com.stthomas.swan9854.core.RecipeCache;
 import com.stthomas.swan9854.event.EventHandlerItem;
+import com.stthomas.swan9854.event.InventoryUpdateEvent;
 import com.stthomas.swan9854.event.OverlayHandler;
 
 @Mod(modid = ItemPlanner.MODID, name = ItemPlanner.NAME, version = ItemPlanner.VERSION, clientSideOnly = true)
@@ -26,6 +27,7 @@ public class ItemPlanner
     public void preInit(FMLPreInitializationEvent event)
     {
         Keybinds.register();
+        MinecraftForge.EVENT_BUS.register(new InventoryUpdateEvent());
         MinecraftForge.EVENT_BUS.register(new OverlayHandler());
         MinecraftForge.EVENT_BUS.register(new EventHandlerItem());
     }
@@ -33,7 +35,6 @@ public class ItemPlanner
     @EventHandler
     public void postInit(FMLPostInitializationEvent e)
     {
-
     	RecipeCache.initialize();
     }
 
